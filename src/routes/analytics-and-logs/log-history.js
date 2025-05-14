@@ -21,7 +21,7 @@ async function logApiActivity(endpoint, data, result) {
 // Get all API logs
 router.get('/', async (req, res) => {
   try {
-    const snapshot = await db.collection('api_logs')
+    const snapshot = await db.collection('logs')  // Changed from 'api_logs' to 'logs'
       .orderBy('timestamp', 'desc')
       .get();
     
@@ -32,11 +32,26 @@ router.get('/', async (req, res) => {
       });
     }
 
-    const logs = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: doc.data().timestamp.toDate().toISOString()
-    }));
+    const logs = snapshot.docs.map(doc => {
+      const data = doc.data();
+      // Handle different timestamp formats
+      let timestamp = data.timestamp;
+      if (timestamp && typeof timestamp.toDate === 'function') {
+        timestamp = timestamp.toDate().toISOString();
+      } else if (timestamp && timestamp._seconds) {
+        // Handle Firestore timestamp object
+        timestamp = new Date(timestamp._seconds * 1000).toISOString();
+      } else if (timestamp) {
+        // If it's already a string or Date, convert to ISO string
+        timestamp = new Date(timestamp).toISOString();
+      }
+
+      return {
+        id: doc.id,
+        ...data,
+        timestamp
+      };
+    });
 
     res.json({
       logs,
@@ -56,7 +71,8 @@ router.get('/', async (req, res) => {
 // Clear all API logs
 router.delete('/', async (req, res) => {
   try {
-    const snapshot = await db.collection('api_logs').get();
+    const snapshot = await db.collection('logs')  // Changed from 'api_logs' to 'logs'
+      .get();
     
     if (snapshot.empty) {
       return res.status(404).json({ 

@@ -108,6 +108,8 @@ async function requestNavigation(latitude, longitude) {
 
 // Update current location endpoint
 router.post('/', async (req, res) => {
+  const startTime = Date.now();
+  
   try {
     const { latitude, longitude } = req.body;
     console.log('Received coordinates:', { latitude, longitude });
@@ -312,9 +314,38 @@ router.post('/', async (req, res) => {
       }
     }
 
+    // Add logging before sending response
+    await db.collection('logs').add({
+      type: 'current-distance',
+      endpoint: '/api/current-distance',
+      method: 'POST',
+      requestBody: { latitude, longitude },
+      responseBody: result,
+      result: {
+        isWithinRange: result.isWithinRange,
+        distance: result.distance,
+        navigationStatus: result.navigationStatus
+      },
+      status: 'success',
+      responseTime: Date.now() - startTime,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+
     res.json(result);
 
   } catch (error) {
+    // Log error
+    await db.collection('logs').add({
+      type: 'current-distance',
+      endpoint: '/api/current-distance',
+      method: 'POST',
+      requestBody: req.body,
+      status: 'error',
+      error: error.message,
+      responseTime: Date.now() - startTime,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
     console.error('Error details:', error);
     res.status(500).json({ 
       error: 'Error checking distance: ' + error.message,

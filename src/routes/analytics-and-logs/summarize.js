@@ -9,7 +9,7 @@ const db = admin.firestore();
 // Get AI summary of recent logs
 router.post('/', async (req, res) => {
   try {
-    const snapshot = await db.collection('api_logs')
+    const snapshot = await db.collection('logs')  // Changed from 'api_logs' to 'logs'
       .orderBy('timestamp', 'desc')
       .limit(50)
       .get();
@@ -21,11 +21,24 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const logs = snapshot.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-      timestamp: doc.data().timestamp.toDate().toISOString()
-    }));
+    const logs = snapshot.docs.map(doc => {
+      const data = doc.data();
+      // Handle different timestamp formats
+      let timestamp = data.timestamp;
+      if (timestamp && typeof timestamp.toDate === 'function') {
+        timestamp = timestamp.toDate().toISOString();
+      } else if (timestamp && timestamp._seconds) {
+        timestamp = new Date(timestamp._seconds * 1000).toISOString();
+      } else if (timestamp) {
+        timestamp = new Date(timestamp).toISOString();
+      }
+
+      return {
+        ...data,
+        id: doc.id,
+        timestamp
+      };
+    });
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GOOGLE_GEMINI_API_KEY}`,
@@ -37,13 +50,28 @@ router.post('/', async (req, res) => {
             {
               role: "user",
               parts: [{
-                text: "You are an AI assistant that explains technical topics in a friendly and beginner-friendly way. Keep your answers clear and simple."
+                text:  `Act as a caregiver monitoring elderly in a nursing home. I’ll give activity logs. Analyze them and return in json format:
+{
+  "gps": {
+    "summary": "string",
+    "steps": ["string"]
+  },
+  "fallDetection": {
+    "summary": "string",
+    "steps": ["string"]
+  },
+  "currentDistance": {
+    "summary": "string",
+    "steps": ["string"]
+  }
+}
+don't give me markdown format and don't give me \n format`
               }]
             },
             {
               role: "user", 
               parts: [{
-                text: `Please analyze and summarize these API logs in a clear way: ${JSON.stringify(logs, null, 2)}`
+                text: `These API logs ${JSON.stringify(logs, null, 2)}`
               }]
             }
           ]

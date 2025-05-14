@@ -98,13 +98,15 @@ Content-Type: application/json
 - POST `/api/navigation` - Generate navigation route
 - GET `/api/text-to-speech` - Get latest voice instruction
 - POST `/api/text-to-speech` - Generate text-to-speech audio
-- GET `/api/speech/:filename` - Download speech file
+- GET `/api/speech/:filename` - Download speech file  
 
 #### Emergency Features
 
 - POST `/api/fall-detection` - Report fall incident
 - GET `/api/fall-notification` - Get fall details
 - POST `/api/sos-location` - Search emergency locations by custom radius
+- POST `/api/alert` - Send emergency alert
+- GET `/api/alert` - Get latest alert status
 
 #### Analytics & Logs
 
@@ -135,6 +137,8 @@ Content-Type: application/json
 ✅ POST `/api/fall-detection` - Report fall incident
 ✅ GET `/api/fall-notification` - Get fall details
 ✅ POST `/api/sos-location` - Search emergency locations
+✅ POST `/api/alert` - Send emergency alert
+✅ GET `/api/alert` - Get latest alert status
 
 #### Analytics APIs
 
@@ -1059,6 +1063,52 @@ Currently no rate limiting implemented.
   - Used for storing navigation audio files
 
 ## 📦 Project Structure
+
+## 🚀 Deployment
+
+### Google Cloud Platform Setup
+
+1. **Prerequisites**
+
+   - Google Cloud account
+   - gcloud CLI installed
+   - Docker installed
+
+2. **Build & Deploy**
+
+   ```bash
+   # Build container
+   docker build -t fallertrack-backend .
+
+   # Tag for Google Container Registry
+   docker tag fallertrack-backend gcr.io/fallertrack/fallertrack-backend
+
+   # Push to Container Registry
+   docker push gcr.io/fallertrack/fallertrack-backend
+
+   # Deploy to Cloud Run
+   gcloud run deploy fallertrack-backend \
+     --image gcr.io/fallertrack/fallertrack-backend \
+     --platform managed \
+     --region us-west2 \
+     --allow-unauthenticated
+   ```
+
+3. **Environment Variables**
+
+   - Set in Cloud Run service
+   - Required variables:
+     ```
+     NODE_ENV=production
+     GOOGLE_CLOUD_PROJECT=fallertrack
+     GOOGLE_APPLICATION_CREDENTIALS=/credentials/service-account.json
+     ```
+
+4. **Monitoring**
+   - Cloud Monitoring dashboard
+   - Cloud Logging for application logs
+   - Error Reporting for exception tracking
+   - Cloud Trace for latency analysis
 
 ## 📊 Google Technologies & APIs Usage Analysis
 

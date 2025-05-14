@@ -4,7 +4,7 @@ const makeGoogleApiRequest = async (location, radius) => {
   try {
     const apiKey = process.env.GOOGLE_MAP_API_KEY;
     const baseUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
-    const types = 'fire_station,hospital,police';
+    const types = 'hospital|fire_station|police';
     
     const url = `${baseUrl}?location=${location.latitude},${location.longitude}&radius=${radius}&type=${types}&key=${apiKey}`;
     
