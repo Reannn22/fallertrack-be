@@ -1,0 +1,78 @@
+const express = require('express');
+require('dotenv').config();
+const router = express.Router();
+const admin = require('../../config/firebase');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+const db = admin.firestore();
+
+// Get AI summary of recent logs
+router.post('/', async (req, res) => {
+  try {
+    const snapshot = await db.collection('api_logs')
+      .orderBy('timestamp', 'desc')
+      .limit(50)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ 
+        error: 'No logs found to summarize',
+        time: new Date().toISOString()
+      });
+    }
+
+    const logs = snapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      timestamp: doc.data().timestamp.toDate().toISOString()
+    }));
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GOOGLE_GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [{
+                text: "You are an AI assistant that explains technical topics in a friendly and beginner-friendly way. Keep your answers clear and simple."
+              }]
+            },
+            {
+              role: "user", 
+              parts: [{
+                text: `Please analyze and summarize these API logs in a clear way: ${JSON.stringify(logs, null, 2)}`
+              }]
+            }
+          ]
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const summary = await response.json();
+    const summaryText = summary.candidates[0].content.parts[0].text;
+
+    await db.collection('log_summaries').add({
+      text: summaryText,
+      logsAnalyzed: logs.length,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    res.json({ text: summaryText });
+
+  } catch (error) {
+    console.error('Error summarizing logs:', error);
+    res.status(500).json({ 
+      error: 'Error summarizing logs: ' + error.message,
+      time: new Date().toISOString()
+    });
+  }
+});
+
+module.exports = router;
