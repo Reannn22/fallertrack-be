@@ -98,7 +98,7 @@ Content-Type: application/json
 - POST `/api/navigation` - Generate navigation route
 - GET `/api/text-to-speech` - Get latest voice instruction
 - POST `/api/text-to-speech` - Generate text-to-speech audio
-- GET `/api/speech/:filename` - Download speech file  
+- GET `/api/speech/:filename` - Download speech file
 
 #### Emergency Features
 
@@ -514,28 +514,20 @@ These test cases cover:
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/fall-detection \
+curl -X POST http://localhost:8080/api/fall-detection \
   -H "Content-Type: application/json" \
   -d '{
-    "accelero": [9.8, 0.1, 0.1],
-    "gyro": [0.1, 0.2, 0.3]
+    "accelero": [90.8, 0.1, 0.1],
+    "gyro": [100.1, 0.2, 0.3]
   }'
 ```
 
-Response (No Fall Detected):
+Response (Fall Detected due to high acceleration and gyroscope values):
 
 ```json
 {
-  "status": false,
-  "message": "Elderly person is safe",
-  "timestamp": "2024-01-20T06:22:30.239Z"
-}
-```
-
-Response (Fall Detected):
-
-```json
-{
+  "accelero": [90.8, 0.1, 0.1],
+  "gyro": [100.1, 0.2, 0.3],
   "status": true,
   "message": "Elderly person has fallen",
   "timestamp": "2024-01-20T06:22:30.239Z"
@@ -544,7 +536,9 @@ Response (Fall Detected):
 
 Notes:
 
-- Fall is detected when total acceleration exceeds 24.5 m/s² (≈ 2.5g)
+- Fall is detected when either:
+  - Total acceleration exceeds 20 m/s²
+  - OR absolute gyroscope value exceeds 100 rad/s
 - accelero: Array of [x, y, z] acceleration values in m/s²
 - gyro: Array of [x, y, z] angular velocity values in rad/s
 

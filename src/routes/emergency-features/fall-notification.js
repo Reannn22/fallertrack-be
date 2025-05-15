@@ -16,23 +16,25 @@ router.get('/', async (req, res) => {
     }
 
     const notification = notificationSnapshot.docs[0].data();
-
+    
+    // Only show emergency status if fall was detected
     const response = {
       latitude: notification.latitude,
       longitude: notification.longitude,
       elderlyInfo: {
         name: notification.elderlyName,
         emergencyContact: {
-          callStatus: notification.callStatus,
-          messageStatus: notification.messageStatus
+          callStatus: notification.fallStatus ? notification.callStatus : false,
+          messageStatus: notification.fallStatus ? notification.messageStatus : false
         }
       },
       notificationStatus: {
-        call: "Emergency call has been made",
-        message: "Emergency message has been sent"
+        call: notification.fallStatus ? "Emergency call has been made" : "No emergency call needed",
+        message: notification.fallStatus ? "Emergency message has been sent" : "No emergency message needed"
       },
       fallDetectionStatus: {
         status: notification.fallStatus,
+        detectionData: notification.detectionData,
         message: notification.fallStatus ? "Elderly person has fallen" : "Elderly person is safe",
         timestamp: notification.timestamp
       },
