@@ -72,8 +72,106 @@ A comprehensive API for elderly fall detection and navigation system.
 
 Base URLs:
 
-- Development: `https://fallertrack-api-755271153581.us-west2.run.app`
-- Production: `https://fallertrack.my.id`
+- Development: `https://fallertrack-backend-bj91ghkxw-reannn22s-projects.vercel.app`
+- Production: `https://fallertrack-be.my.id`
+
+### Frontend-Available Endpoints
+
+#### 1. Home Management
+
+```bash
+# Initialize home location
+curl -X POST https://fallertrack-be.my.id/api/home \
+  -H "Content-Type: application/json" \
+  -d '{
+    "latitude": -5.364489256035376,
+    "longitude": 105.30535841177186,
+    "radius": 200
+  }'
+
+# Get current home location
+curl -X GET https://fallertrack-be.my.id/api/home \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Delete home location
+curl -X DELETE https://fallertrack-be.my.id/api/home \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+#### 2. Location & Navigation
+
+```bash
+# Update current location
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
+  -H "Content-Type: application/json" \
+  -d '{
+    "latitude": -5.3388405,
+    "longitude": 105.32688089999999
+  }'
+
+# Get latest location
+curl -X GET https://fallertrack-be.my.id/api/current-distance \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Get voice navigation instruction
+curl -X GET https://fallertrack-be.my.id/api/speech/text-to-speech \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Generate navigation route
+curl -X POST https://fallertrack-be.my.id/api/navigation \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Get navigation duration
+curl -X GET https://fallertrack-be.my.id/api/time-length \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+#### 3. Emergency Features
+
+```bash
+# Report fall detection
+curl -X POST https://fallertrack-be.my.id/api/fall-detection \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accelero": [9.8, 0.1, 0.1],
+    "gyro": [0.1, 0.2, 0.3]
+  }'
+
+# Get fall notification status
+curl -X GET https://fallertrack-be.my.id/api/fall-notification \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Search emergency services
+curl -X POST https://fallertrack-be.my.id/api/sos-location \
+  -H "Content-Type: application/json" \
+  -d '{
+    "radius": 10000
+  }'
+
+# Send emergency alert
+curl -X POST https://fallertrack-be.my.id/api/alert \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sos": true
+  }'
+```
+
+### Backend-Only Endpoints
+
+The following endpoints are for internal system use only and should not be called directly from frontend applications:
+
+- POST `/api/text-to-speech` - Generate text-to-speech audio
+- GET `/api/speech/:filename` - Download speech file
+- GET `/api/log-history` - Get API activity logs
+- DELETE `/api/log-history` - Clear API logs
+- POST `/api/summarize` - Generate AI summary of logs
 
 ### Authentication and Headers
 
@@ -156,7 +254,7 @@ Content-Type: application/json
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/home \
+curl -X POST https://fallertrack-be.my.id/api/home \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.364489256035376,
@@ -190,7 +288,7 @@ Error Response (400):
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/home \
+curl -X GET https://fallertrack-be.my.id/api/home \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -221,7 +319,7 @@ Error Response (404):
 Request:
 
 ```bash
-curl -X DELETE https://fallertrack.my.id/api/home \
+curl -X DELETE https://fallertrack-be.my.id/api/home \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -251,7 +349,7 @@ Error Response (500):
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/current-distance \
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.3388405,
@@ -282,7 +380,7 @@ Response:
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/text-to-speech \
+curl -X GET https://fallertrack-be.my.id/api/text-to-speech \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -304,7 +402,7 @@ Response:
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/text-to-speech \
+curl -X POST https://fallertrack-be.my.id/api/text-to-speech \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Turn right at the next intersection"
@@ -328,7 +426,7 @@ Response:
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/speech/speech_1747020523618.mp3 \
+curl -X GET https://fallertrack-be.my.id/api/speech/speech_1747020523618.mp3 \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -348,7 +446,7 @@ Content-Disposition: attachment; filename="speech_1747020523618.mp3"
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/navigation \
+curl -X POST https://fallertrack-be.my.id/api/navigation \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -420,7 +518,7 @@ Error Response (500):
 1. At Start Point (Case 1: TRIGGER_DISTANCE ≤ 10m):
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/current-distance \
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.3388405,
@@ -450,7 +548,7 @@ Response:
 2. On Route (Case 2: ON_ROUTE_MARGIN ≤ 20m):
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/current-distance \
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.338997,
@@ -480,7 +578,7 @@ Response:
 3. Off Route (Distance > 20m):
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/current-distance \
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.338997,
@@ -547,7 +645,7 @@ Notes:
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/fall-notification \
+curl -X GET https://fallertrack-be.my.id/api/fall-notification \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -599,7 +697,7 @@ Response:
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/sos-location \
+curl -X POST https://fallertrack-be.my.id/api/sos-location \
   -H "Content-Type: application/json" \
   -d '{
     "radius": 5000
@@ -626,7 +724,7 @@ Response:
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/alert \
+curl -X POST https://fallertrack-be.my.id/api/alert \
   -H "Content-Type: application/json" \
   -d '{
     "sos": true
@@ -656,7 +754,7 @@ Error Response (400):
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/alert
+curl -X GET https://fallertrack-be.my.id/api/alert
 ```
 
 Success Response:
@@ -684,7 +782,7 @@ Error Response (404):
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/time-length \
+curl -X POST https://fallertrack-be.my.id/api/time-length \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -705,7 +803,7 @@ Response:
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/log-history \
+curl -X GET https://fallertrack-be.my.id/api/log-history \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -739,7 +837,7 @@ Response:
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/summarize \
+curl -X POST https://fallertrack-be.my.id/api/summarize \
   -H "Content-Type: application/json" \
   -d '{
     "limit": 50,
@@ -761,7 +859,7 @@ Response:
 Request:
 
 ```bash
-curl -X GET "https://fallertrack.my.id/api/log-history?endpoint=/api/current-distance&limit=2&startDate=2025-05-11T00:00:00Z&endDate=2025-05-12T00:00:00Z" \
+curl -X GET "https://fallertrack-be.my.id/api/log-history?endpoint=/api/current-distance&limit=2&startDate=2025-05-11T00:00:00Z&endDate=2025-05-12T00:00:00Z" \
   -H "Content-Type: application/json"
 ```
 
@@ -814,7 +912,7 @@ Query Parameters:
 Request:
 
 ```bash
-curl -X DELETE https://fallertrack.my.id/api/log-history \
+curl -X DELETE https://fallertrack-be.my.id/api/log-history \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -955,7 +1053,7 @@ Response:
 Request:
 
 ```bash
-curl -X POST https://fallertrack.my.id/api/current-distance \
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.3388405,
@@ -996,7 +1094,7 @@ Error Response (400):
 Request:
 
 ```bash
-curl -X GET https://fallertrack.my.id/api/current-distance \
+curl -X GET https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -1059,6 +1157,39 @@ Currently no rate limiting implemented.
 ## 📦 Project Structure
 
 ## 🚀 Deployment
+
+### Production Environment (Cloud Run)
+
+- URL: `https://fallertrack-be-755271153581.europe-west1.run.app`
+- Region: `europe-west1`
+- Container: `gcr.io/gesp-459003/fallertrack-be`
+
+**Configuration:**
+
+- CPU: 8 cores
+- Memory: 16GB
+- Concurrency: 100 requests
+- Timeout: 300 seconds
+- Autoscaling: Enabled (Min: 0, Max: 1)
+- Startup CPU boost: Enabled
+- Environment: Default
+- Port: 8080
+
+**CI/CD Pipeline:**
+
+1. Triggers on push to main branch
+2. Builds Docker container
+3. Pushes to Google Container Registry
+4. Deploys to Cloud Run
+5. Routes traffic automatically
+6. Health checks enabled
+
+### Development Environment (Vercel)
+
+- URL: `https://fallertrack-backend-bj91ghkxw-reannn22s-projects.vercel.app`
+- Auto-deployment on push to development branch
+- Preview deployments for pull requests
+- Edge Network CDN enabled
 
 ### Google Cloud Platform Setup
 
@@ -1194,6 +1325,6 @@ Currently no rate limiting implemented.
 
 2. Google AI API Key
    - Used for: Gemini API
-   - Key: AIzaSyA1A9io37cq5eems1avvVRUC6RhD2w91CQ
+   - Key: AIzaSyA1A9io37eems1avvVRUC6RhD2w91CQ
 
 Note: All service accounts and API keys shown in this documentation should be treated as sensitive information and should be properly secured in production environments.

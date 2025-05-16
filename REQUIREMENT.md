@@ -95,29 +95,33 @@
 
    - Production Deployment:
 
-     - System must be deployed to Vercel for production environment
-     - System must configure Vercel project settings
-     - System must set up custom domain on Vercel
-     - System must enable Vercel Edge Network CDN
-     - System must configure Vercel environment variables
+     - System must be deployed to Cloud Run in europe-west1 region
+     - System must use container image from Google Container Registry
+     - System must configure 8 CPU cores and 16GB memory
+     - System must handle 100 concurrent requests
+     - System must set 300 seconds request timeout
+     - System must enable startup CPU boost
+     - System must configure autoscaling (0-1 instances)
+     - System must expose port 8080
+     - System must implement health checks
+     - System must use gcr.io/gesp-459003/fallertrack-be container
 
    - Development Deployment:
 
-     - System must be deployed on Google Cloud Platform
-     - System must use Cloud Run for containerization
-     - System must use Cloud Storage for audio files
-     - System must use Cloud Build for CI/CD
-     - System must use Cloud Monitoring for performance tracking
-     - System must configure separate development domain
+     - System must be deployed on Vercel
+     - System must enable preview deployments
+     - System must configure Edge Network CDN
+     - System must implement zero-downtime updates
+     - System must handle staging environments
 
    - Deployment Features:
-     - System must implement zero-downtime deployments
-     - System must enable automatic HTTPS
-     - System must configure CI/CD for both platforms
-     - System must implement staging environments
+     - System must implement automated CI/CD pipeline
+     - System must validate container builds
+     - System must perform health checks
+     - System must enable traffic routing
      - System must maintain deployment logs
-     - System must configure automatic rollbacks
-     - System must implement health checks
+     - System must support rollbacks
+     - System must monitor resource usage
 
 3. Security
 
