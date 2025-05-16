@@ -76,7 +76,6 @@ router.post('/', async (req, res) => {
         body: JSON.stringify({
           contents: [
             {
-              // Setup prompt for caregiver perspective
               role: "user",
               parts: [{
                 text: `Act as a caregiver monitoring elderly in a nursing home. I'll give activity logs. Analyze them and return in json format:
@@ -98,11 +97,16 @@ don't give me markdown format and don't give me \n format`
               }]
             },
             {
-              // Send logs for analysis
               role: "user", 
               parts: [{
                 text: `These API logs ${JSON.stringify(logs, null, 2)}`
               }]
+            }
+          ],
+          safetySettings: [
+            {
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_NONE"
             }
           ]
         })
@@ -111,7 +115,8 @@ don't give me markdown format and don't give me \n format`
 
     // Handle API errors
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(`Gemini API error (${response.status}): ${JSON.stringify(errorData)}`);
     }
 
     // Extract and store summary
@@ -132,7 +137,7 @@ don't give me markdown format and don't give me \n format`
     // Log and return error
     console.error('Error summarizing logs:', error);
     res.status(500).json({ 
-      error: 'Error summarizing logs: ' + error.message,
+      error: error.message,
       time: new Date().toISOString()
     });
   }
