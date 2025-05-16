@@ -1,8 +1,20 @@
+/**
+ * Home Location Service
+ * Handles home location CRUD operations and geocoding
+ */
+
+// Import required dependencies
 const admin = require('../../config/firebase');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+// Initialize Firestore
 const db = admin.firestore();
 
+/**
+ * Retrieve current home location
+ * @throws {Error} If no home location is found
+ * @returns {Object} Home location data
+ */
 async function getHomeLocation() {
   const doc = await db.collection('homes').doc('current').get();
   if (!doc.exists) {
@@ -11,6 +23,14 @@ async function getHomeLocation() {
   return doc.data();
 }
 
+/**
+ * Initialize new home location
+ * @param {number} latitude - Home latitude coordinate
+ * @param {number} longitude - Home longitude coordinate
+ * @param {number} radius - Geofence radius in meters
+ * @throws {Error} If home already exists or geocoding fails
+ * @returns {Object} Created home location data
+ */
 async function initializeHome(latitude, longitude, radius) {
   const existingHome = await db.collection('homes').doc('current').get();
   if (existingHome.exists) {
@@ -42,10 +62,15 @@ async function initializeHome(latitude, longitude, radius) {
   return { latitude, longitude, radius, nama: locationName };
 }
 
+/**
+ * Delete current home location
+ * @returns {void}
+ */
 async function deleteHome() {
   await db.collection('homes').doc('current').delete();
 }
 
+// Export service functions and database instance
 module.exports = {
   getHomeLocation,
   initializeHome,

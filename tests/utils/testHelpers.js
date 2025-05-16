@@ -1,17 +1,35 @@
+/**
+ * Test Utility Functions
+ * Provides mock objects and helper functions for testing
+ */
+
+/**
+ * Mock Firestore instance
+ * Simulates database operations for testing
+ */
 const mockFirestore = {
-  collection: jest.fn().mockReturnThis(),
-  doc: jest.fn().mockReturnThis(),
-  add: jest.fn(),
-  set: jest.fn(),
-  get: jest.fn(),
-  orderBy: jest.fn().mockReturnThis(),
-  limit: jest.fn().mockReturnThis()
+  collection: jest.fn().mockReturnThis(),  // Chain collection calls
+  doc: jest.fn().mockReturnThis(),        // Chain document calls
+  add: jest.fn(),                         // Mock document creation
+  set: jest.fn(),                         // Mock document updates
+  get: jest.fn(),                         // Mock document retrieval
+  orderBy: jest.fn().mockReturnThis(),    // Chain query ordering
+  limit: jest.fn().mockReturnThis()       // Chain query limits
 };
 
+/**
+ * Create mock Express request object
+ * @param {Object} params - Query parameters to include
+ * @returns {Object} Mock request object
+ */
 const createMockRequest = (params = {}) => ({
   query: params,
 });
 
+/**
+ * Create mock Express response object
+ * @returns {Object} Mock response object with status and json methods
+ */
 const createMockResponse = () => {
   const res = {
     status: jest.fn().mockReturnThis(),
@@ -20,6 +38,10 @@ const createMockResponse = () => {
   return res;
 };
 
+/**
+ * Sample test data
+ * Used for consistent test scenarios
+ */
 const mockData = {
   currentLocation: {
     latitude: 1.23,
@@ -41,6 +63,7 @@ const mockData = {
   }
 };
 
+// Export utilities
 module.exports = {
   mockFirestore,
   createMockRequest,

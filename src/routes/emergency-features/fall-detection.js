@@ -1,11 +1,24 @@
+/**
+ * Fall Detection Router
+ * Handles fall detection data processing and notifications
+ */
+
+// Import required dependencies
 const express = require('express');
 const router = express.Router();
 const admin = require('../../../config/firebase');
 
+// Initialize Firestore
 const db = admin.firestore();
 
-// Add validation helper
+/**
+ * Validate and sanitize fall detection input data
+ * @param {Object} data - Request body containing accelerometer and gyroscope data
+ * @returns {Object} Sanitized data with numeric values
+ * @throws {Error} If data format is invalid
+ */
 const validateInput = (data) => {
+  // Validate data structure and array lengths
   if (!data.accelero || !Array.isArray(data.accelero) || data.accelero.length !== 3 ||
       !data.gyro || !Array.isArray(data.gyro) || data.gyro.length !== 3) {
     throw new Error('Invalid input format. Requires accelero and gyro arrays with 3 numbers each');
@@ -25,20 +38,27 @@ const validateInput = (data) => {
   return sanitizedData;
 };
 
+/**
+ * POST /api/fall-detection
+ * Process accelerometer and gyroscope data to detect falls
+ */
 router.post('/', async (req, res) => {
   const startTime = Date.now();
   
   try {
-    console.log('Received body:', JSON.stringify(req.body)); // Debug log
+    // Log incoming data for debugging
+    console.log('Received body:', JSON.stringify(req.body));
     
-    // Validate and sanitize input
+    // Validate sensor data
     const { accelero, gyro } = validateInput(req.body);
     const timestamp = admin.firestore.FieldValue.serverTimestamp();
     
-    // Fall detection logic
+    // Check fall conditions:
+    // - Acceleration > 20 m/s² OR
+    // - Angular velocity > 100 rad/s
     const hasFallen = accelero[0] > 20 || Math.abs(gyro[0]) > 100;
     
-    // Store fall detection status with unique ID
+    // Store detection data in Firestore
     const detectionRef = await db.collection('fall_detections').add({
       accelero,
       gyro,
@@ -46,7 +66,7 @@ router.post('/', async (req, res) => {
       timestamp
     });
 
-    // Always create/update notification with latest detection data
+    // Prepare notification data with location and elderly info
     const notificationData = {
       latitude: -5.340154,
       longitude: 105.326813,
@@ -55,24 +75,23 @@ router.post('/', async (req, res) => {
       messageStatus: hasFallen,
       fallStatus: hasFallen,
       detectionId: detectionRef.id,
-      detectionData: {
-        accelero,
-        gyro
-      },
+      detectionData: { accelero, gyro },
       timestamp
     };
 
+    // Store notification in Firestore
     await db.collection('fall_notifications').add(notificationData);
 
+    // Prepare API response
     const response = {
-      accelero,      // Add accelero from input
-      gyro,          // Add gyro from input
+      accelero,
+      gyro,
       status: hasFallen,
       message: hasFallen ? "Elderly person has fallen" : "Elderly person is safe",
       timestamp: new Date().toISOString()
     };
 
-    // Add logging with response
+    // Log successful detection
     await db.collection('logs').add({
       type: 'fall-detection',
       endpoint: '/api/fall-detection',
@@ -85,6 +104,7 @@ router.post('/', async (req, res) => {
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
 
+    // Return detection results
     res.json(response);
 
   } catch (error) {
@@ -114,4 +134,5 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Export router
 module.exports = router;

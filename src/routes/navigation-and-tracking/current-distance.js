@@ -1,16 +1,38 @@
+/**
+ * Current Location Router
+ * Handles location tracking and navigation status updates
+ */
+
+// Import required dependencies
 const express = require('express');
 const router = express.Router();
 const admin = require('../../../config/firebase');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+// Initialize Firestore
 const db = admin.firestore();
 
-// Add coordinate normalization helper
+/**
+ * Helper Functions for Location Processing
+ */
+
+/**
+ * Round coordinates to 6 decimal places for consistency
+ * @param {number} coord - Coordinate value
+ * @returns {number} Rounded coordinate
+ */
 function roundCoordinate(coord) {
   return parseFloat(coord.toFixed(6));
 }
 
-// Add bearing calculation helper
+/**
+ * Calculate bearing angle between two points
+ * @param {number} lat1 - Starting latitude
+ * @param {number} lon1 - Starting longitude
+ * @param {number} lat2 - Ending latitude
+ * @param {number} lon2 - Ending longitude
+ * @returns {number} Bearing in degrees (0-360)
+ */
 function calculateBearing(lat1, lon1, lat2, lon2) {
   const φ1 = lat1 * Math.PI / 180;
   const φ2 = lat2 * Math.PI / 180;
@@ -26,7 +48,13 @@ function calculateBearing(lat1, lon1, lat2, lon2) {
   return bearing;
 }
 
-// Add point-on-segment check helper
+/**
+ * Navigation Helper Functions
+ */
+
+/**
+ * Check if point is on a route segment within margin
+ */
 function isPointOnSegment(lat, lon, startLat, startLon, endLat, endLon, margin) {
   const distanceToSegment = getDistanceFromLine(lat, lon, startLat, startLon, endLat, endLon);
   const distanceToStart = calculateDistance(lat, lon, startLat, startLon);
@@ -37,7 +65,9 @@ function isPointOnSegment(lat, lon, startLat, startLon, endLat, endLon, margin) 
          (distanceToStart + distanceToEnd) <= (segmentLength + margin);
 }
 
-// Helper function to calculate distance between two points
+/**
+ * Calculate distance between two coordinates using Haversine formula
+ */
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3; // Earth's radius in meters
   const φ1 = lat1 * Math.PI / 180;
@@ -52,7 +82,9 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c; // Distance in meters
 }
 
-// Helper function for point-to-line distance
+/**
+ * Calculate shortest distance from point to line segment
+ */
 function getDistanceFromLine(pointLat, pointLon, lineStartLat, lineStartLon, lineEndLat, lineEndLon) {
   const A = pointLat - lineStartLat;
   const B = pointLon - lineStartLon;
@@ -83,7 +115,9 @@ function getDistanceFromLine(pointLat, pointLon, lineStartLat, lineStartLon, lin
   return calculateDistance(pointLat, pointLon, xx, yy);
 }
 
-// Update helper function for navigation request
+/**
+ * Request new navigation route from API
+ */
 async function requestNavigation(latitude, longitude) {
   try {
     if (!process.env.NAVIGATION_API_URL) {
@@ -106,7 +140,14 @@ async function requestNavigation(latitude, longitude) {
   }
 }
 
-// Update current location endpoint
+/**
+ * Route Handlers
+ */
+
+/**
+ * POST /api/current-distance
+ * Update current location and get navigation status
+ */
 router.post('/', async (req, res) => {
   const startTime = Date.now();
   
@@ -354,7 +395,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get latest current location
+/**
+ * GET /api/current-distance
+ * Get latest location and navigation status
+ */
 router.get('/', async (req, res) => {
   try {
     const snapshot = await db.collection('current_locations')
@@ -390,4 +434,5 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Export router
 module.exports = router;
