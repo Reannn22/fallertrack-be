@@ -1,12 +1,12 @@
 const express = require('express'); 
 const path = require('path');
 const { Storage } = require('@google-cloud/storage');
-const getAccessToken = require('./src/config/getAccessToken');
+const getAccessToken = require('./config/getAccessToken');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, 'config', '.env') });
 
 // Import initialized Firebase
-const admin = require('./src/config/firebase');
+const admin = require('./config/firebase');
 const homeRoutes = require('./src/routes/home-management/home');
 const currentDistanceRoutes = require('./src/routes/navigation-and-tracking/current-distance');
 const navigationRoutes = require('./src/routes/navigation-and-tracking/navigation');

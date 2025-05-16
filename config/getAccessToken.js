@@ -3,7 +3,7 @@ const path = require('path');
 
 async function getAccessToken() {
   const auth = new GoogleAuth({
-    keyFile: path.join(__dirname, '../../credentials/gesp-459003-aabf1ee34b71.json'),
+    keyFile: path.join(__dirname, '../credentials/gesp-459003-aabf1ee34b71.json'),
     scopes: ['https://www.googleapis.com/auth/cloud-platform']
   });
 

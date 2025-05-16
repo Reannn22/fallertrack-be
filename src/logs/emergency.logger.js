@@ -1,4 +1,4 @@
-const admin = require('../config/firebase');
+const admin = require('../../config/firebase');
 const db = admin.firestore();
 
 const logEmergencySearch = (searchData) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const admin = require('../../config/firebase');
+const admin = require('../../../config/firebase');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const db = admin.firestore();

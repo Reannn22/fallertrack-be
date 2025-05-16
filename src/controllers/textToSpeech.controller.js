@@ -1,4 +1,4 @@
-const admin = require('../config/firebase');
+const admin = require('../../config/firebase');
 const ttsService = require('../services/textToSpeech.service');
 
 const generateSpeech = async (req, res) => {

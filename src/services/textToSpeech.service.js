@@ -1,8 +1,8 @@
-const admin = require('../config/firebase');
+const admin = require('../../config/firebase');
 const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const getAccessToken = require('../config/getAccessToken');
+const getAccessToken = require('../../config/getAccessToken');
 
 const db = admin.firestore();
 const storage = new Storage({

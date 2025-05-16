@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const navigationController = require('../../controllers/navigation.controller');
-const admin = require('../../config/firebase');
+const admin = require('../../../config/firebase');
 
 const db = admin.firestore();
 
