@@ -54,19 +54,21 @@ router.post('/', async (req, res) => {
     const timestamp = admin.firestore.FieldValue.serverTimestamp();
     
     // Check fall conditions:
-    // - Acceleration > 20 m/s² OR
-    // - Angular velocity > 100 rad/s
-    const hasFallen = accelero[0] > 20 || Math.abs(gyro[0]) > 100;
+    // Total acceleration magnitude > 20 m/s² OR Angular velocity > 100 rad/s
+    const totalAcceleration = Math.sqrt(
+      Math.pow(accelero[0], 2) + 
+      Math.pow(accelero[1], 2) + 
+      Math.pow(accelero[2], 2)
+    );
+    const totalGyro = Math.sqrt(
+      Math.pow(gyro[0], 2) + 
+      Math.pow(gyro[1], 2) + 
+      Math.pow(gyro[2], 2)
+    );
     
-    // Store detection data in Firestore
-    const detectionRef = await db.collection('fall_detections').add({
-      accelero,
-      gyro,
-      status: hasFallen,
-      timestamp
-    });
+    const hasFallen = totalAcceleration > 20 || totalGyro > 100;
 
-    // Prepare notification data with location and elderly info
+    // Always save latest detection data regardless of fall status
     const notificationData = {
       latitude: -5.340154,
       longitude: 105.326813,
@@ -74,13 +76,18 @@ router.post('/', async (req, res) => {
       callStatus: hasFallen,
       messageStatus: hasFallen,
       fallStatus: hasFallen,
-      detectionId: detectionRef.id,
       detectionData: { accelero, gyro },
-      timestamp
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    // Store notification in Firestore
-    await db.collection('fall_notifications').add(notificationData);
+    // Always update latest_status, even if not fallen
+    await db.collection('fall_notifications')
+      .doc('latest_status')
+      .set(notificationData);
+    
+    // Store in history collection
+    await db.collection('fall_notifications_history')
+      .add(notificationData);
 
     // Prepare API response
     const response = {
