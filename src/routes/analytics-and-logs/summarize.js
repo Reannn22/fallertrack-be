@@ -19,11 +19,24 @@ const db = admin.firestore();
  */
 router.post('/', async (req, res) => {
   try {
-    // Fetch 50 most recent logs
-    const snapshot = await db.collection('logs')
+    // Get optional parameters from request body
+    const { limit = 50, startDate, endDate } = req.body;
+
+    // Build query
+    let query = db.collection('logs')
       .orderBy('timestamp', 'desc')
-      .limit(50)
-      .get();
+      .limit(limit);
+
+    // Add date filters if provided
+    if (startDate) {
+      query = query.where('timestamp', '>=', new Date(startDate));
+    }
+    if (endDate) {
+      query = query.where('timestamp', '<=', new Date(endDate));
+    }
+
+    // Execute query
+    const snapshot = await query.get();
 
     // Handle case when no logs exist
     if (snapshot.empty) {

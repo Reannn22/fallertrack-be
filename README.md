@@ -91,8 +91,7 @@ curl -X POST https://fallertrack-be.my.id/api/home \
 
 # Get current home location
 curl -X GET https://fallertrack-be.my.id/api/home \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 
 # Delete home location
 curl -X DELETE https://fallertrack-be.my.id/api/home \
@@ -113,13 +112,11 @@ curl -X POST https://fallertrack-be.my.id/api/current-distance \
 
 # Get latest location
 curl -X GET https://fallertrack-be.my.id/api/current-distance \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 
 # Get voice navigation instruction
 curl -X GET https://fallertrack-be.my.id/api/speech/text-to-speech \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 
 # Generate navigation route
 curl -X POST https://fallertrack-be.my.id/api/navigation \
@@ -128,8 +125,7 @@ curl -X POST https://fallertrack-be.my.id/api/navigation \
 
 # Get navigation duration
 curl -X GET https://fallertrack-be.my.id/api/time-length \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 #### 3. Emergency Features
@@ -145,8 +141,7 @@ curl -X POST https://fallertrack-be.my.id/api/fall-detection \
 
 # Get fall notification status
 curl -X GET https://fallertrack-be.my.id/api/fall-notification \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 
 # Search emergency services
 curl -X POST https://fallertrack-be.my.id/api/sos-location \
@@ -289,8 +284,7 @@ Request:
 
 ```bash
 curl -X GET https://fallertrack-be.my.id/api/home \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 Success Response (200):
@@ -381,8 +375,7 @@ Request:
 
 ```bash
 curl -X GET https://fallertrack-be.my.id/api/text-to-speech \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 Response:
@@ -427,8 +420,7 @@ Request:
 
 ```bash
 curl -X GET https://fallertrack-be.my.id/api/speech/speech_1747020523618.mp3 \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 Response:
@@ -612,7 +604,7 @@ These test cases cover:
 Request:
 
 ```bash
-curl -X POST http://localhost:8080/api/fall-detection \
+curl -X POST https://fallertrack-be.my.id/api/fall-detection \
   -H "Content-Type: application/json" \
   -d '{
     "accelero": [90.8, 0.1, 0.1],
@@ -646,8 +638,7 @@ Request:
 
 ```bash
 curl -X GET https://fallertrack-be.my.id/api/fall-notification \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 Response:
@@ -754,7 +745,8 @@ Error Response (400):
 Request:
 
 ```bash
-curl -X GET https://fallertrack-be.my.id/api/alert
+curl -X GET https://fallertrack-be.my.id/api/alert \
+  -H "Content-Type: application/json"
 ```
 
 Success Response:
@@ -804,8 +796,7 @@ Request:
 
 ```bash
 curl -X GET https://fallertrack-be.my.id/api/log-history \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 Response:
@@ -934,10 +925,11 @@ Request:
 
 ```bash
 # Using POST
-curl -X POST http://localhost:8080/api/time-length
+curl -X POST https://fallertrack-be.my.id/api/time-length
 
 # Using GET
-curl -X GET http://localhost:8080/api/time-length
+curl -X GET https://fallertrack-be.my.id/api/time-length \
+  -H "Content-Type: application/json"
 ```
 
 Success Response:
@@ -976,7 +968,7 @@ Note: Time calculation starts when home location is set and ends when destinatio
 1. Set Home Location:
 
 ```bash
-curl -X POST http://localhost:8080/api/home \
+curl -X POST https://fallertrack-be.my.id/api/home \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.364489256035376,
@@ -1000,7 +992,7 @@ Response:
 2. Update Location (Reaching Destination):
 
 ```bash
-curl -X POST http://localhost:8080/api/current-distance \
+curl -X POST https://fallertrack-be.my.id/api/current-distance \
   -H "Content-Type: application/json" \
   -d '{
     "latitude": -5.36453602,
@@ -1032,7 +1024,8 @@ Response:
 3. Get Time Length:
 
 ```bash
-curl -X GET http://localhost:8080/api/time-length
+curl -X GET https://fallertrack-be.my.id/api/time-length \
+  -H "Content-Type: application/json"
 ```
 
 Response:
@@ -1095,8 +1088,7 @@ Request:
 
 ```bash
 curl -X GET https://fallertrack-be.my.id/api/current-distance \
-  -H "Content-Type: application/json" \
-  -d '{}'
+  -H "Content-Type: application/json"
 ```
 
 Success Response (200):
